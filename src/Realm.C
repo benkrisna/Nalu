@@ -4313,7 +4313,7 @@ Realm::limiter_type(
   const std::string dofName)
 {
   std::string limiterType = "van-leer"; // default
-  std::map<std::string, bool>::const_iterator iter
+  std::map<std::string, std::string>::const_iterator iter
     = solutionOptions_->limiterTypeMap_.find(dofName);
   if (iter != solutionOptions_->limiterTypeMap_.end()) {
     limiterType = (*iter).second;
