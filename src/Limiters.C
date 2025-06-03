@@ -31,6 +31,9 @@ namespace nalu{
     }
   }
 
+#ifdef STK_HAVE_SIMD
+template van_leer_limiter<DoubleType>(const DoubleType&, const DoubleType&, const DoubleType&);
+#endif
 
 } // namespace nalu
 } // namespace Sierra
