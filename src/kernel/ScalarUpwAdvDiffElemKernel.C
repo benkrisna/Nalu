@@ -15,6 +15,7 @@
 // template and scratch space
 #include "BuildTemplates.h"
 #include "ScratchViews.h"
+#include "Limiters.h"
 
 // stk_mesh/base/fem
 #include <stk_mesh/base/Entity.hpp>
@@ -187,8 +188,10 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::execute(
       const DoubleType dq = v_scalarQ(ir) - v_scalarQ(il);
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = van_leer(dqMl, dq);
-      limitR = van_leer(dqMr, dq);
+      // limitL = van_leer(dqMl, dq);
+      // limitR = van_leer(dqMr, dq);
+      limitL = van_leer_limiter(dqMl, dq);
+      limitR = van_leer_limiter(dqMr, dq);
     }
 
     // extrapolated; for now limit (along edge is fine)
