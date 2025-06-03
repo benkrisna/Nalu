@@ -265,6 +265,9 @@ SolutionOptions::load(const YAML::Node & y_node)
         else if (expect_map(y_option, "limiter", optional)) {
           y_option["limiter"] >> limiterMap_ ;
         }
+        else if (expect_map(y_option, "limiter_type", optional)) {
+          y_option["limiter_type"] >> limiterTypeMap_ ;
+        }
         else if (expect_map( y_option, "laminar_schmidt", optional)) {
           y_option["laminar_schmidt"] >> lamScMap_ ;
         }
@@ -818,6 +821,17 @@ SolutionOptions::primitive_uses_limiter(const std::string& dofName) const
     usesIt = iter->second;
 
   return usesIt;
+}
+
+std::string
+SolutionOptions::limiter_type(const std::string& dofName) const
+{
+  std::string limiterType = "van-leer"; // default
+  auto iter = limiterTypeMap_.find(dofName);
+  if (iter != limiterTypeMap_.end())
+    limiterType = iter->second;
+
+  return limiterType;
 }
 
 bool

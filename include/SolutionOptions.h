@@ -70,6 +70,7 @@ public:
   double get_upw_factor(const std::string&) const;
 
   bool primitive_uses_limiter(const std::string&) const;
+  std::string limiter_type(const std::string&) const;
 
   bool get_shifted_grad_op(const std::string&) const;
   
@@ -163,6 +164,7 @@ public:
   std::map<std::string, double> alphaUpwMap_;
   std::map<std::string, double> upwMap_;
   std::map<std::string, bool> limiterMap_;
+  std::map<std::string, std::string> limiterTypeMap_;
   std::map<std::string, std::string> tanhFormMap_;
   std::map<std::string, double> tanhTransMap_;
   std::map<std::string, double> tanhWidthMap_;
