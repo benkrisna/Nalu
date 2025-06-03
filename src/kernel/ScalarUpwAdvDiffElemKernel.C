@@ -190,8 +190,8 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::execute(
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
       // limitL = van_leer(dqMl, dq);
       // limitR = van_leer(dqMr, dq);
-      limitL = van_leer_limiter(dqMl, dq, 1e-10);
-      limitR = van_leer_limiter(dqMr, dq, 1e-10);
+      limitL = van_leer_limiter<DoubleType>(dqMl, dq);
+      limitR = van_leer_limiter<DoubleType>(dqMr, dq);
     }
 
     // extrapolated; for now limit (along edge is fine)
