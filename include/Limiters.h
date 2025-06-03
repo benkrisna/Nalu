@@ -4,10 +4,17 @@
 /*  in the file, LICENSE, which is located in the top-level Nalu          */
 /*  directory structure                                                   */
 /*------------------------------------------------------------------------*/
-#include<FieldTypeDef.h>
 
-namespace sierra {
-  namespace nalu {
-    double van_leer_limiter(const DoubleType &dqm, const DoubleType &dqp);
-  } // namespace nalu
-} // namespace sierra
+
+#ifndef Limiters_h
+#define Limiters_h
+
+namespace sierra{
+namespace nalu{
+
+double van_leer_limiter(const double& dq, const double& dm, const double& small=1e-10);
+
+} // namespace nalu
+} // namespace Sierra
+
+#endif

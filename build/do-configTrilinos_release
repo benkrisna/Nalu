@@ -1,8 +1,8 @@
 # The base directory where mpi is located.  
 # From here you should be able to find include/mpi.h bin/mpicxx, bin/mpiexec, etc.
 # mpi_base_dir=/path_to_mpi/mpi/openmpi/4.1.2
-mpi_base_dir=/opt/intel/impi/2018.3.222/intel64/bin/mpicc
-nalu_install_dir=/path_to_install/install/gcc10.3.0
+mpi_base_dir=/opt/homebrew/bin/mpicc
+nalu_install_dir=/Users/benkris/scratch/courses/CME369/homeworks/midterm/code/Nalu
 
 # Note: Don't forget to set your LD_LIBRARY_PATH to $mpi_base_dir/lib
 #       You may also need to add to LD_LIBRARY_PATH the lib directory for the compiler
