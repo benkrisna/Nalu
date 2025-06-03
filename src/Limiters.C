@@ -19,16 +19,9 @@ namespace nalu{
   T van_leer_limiter(const T& dq, const T& dm, const T& small)
   {
     // van Leer limiter
-    // https://en.wikipedia.org/wiki/Van_Leer_limiter
-    if (std::abs(dq) < small && std::abs(dm) < small) {
-      return 1.0;
-    }
-    else if (dm * dq > 0.0) {
-      return 2.0 * dq / (dq + dm);
-    }
-    else {
-      return 0.0;
-    }
+    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
+      ((dm+dq)*(dm+dq)+small);
+    return limit;
   }
 
 #ifdef STK_HAVE_SIMD
