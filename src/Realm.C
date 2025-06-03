@@ -4306,6 +4306,22 @@ Realm::primitive_uses_limiter(
 }
 
 //--------------------------------------------------------------------------
+//--------  limiter_type ------------------------------------------
+//--------------------------------------------------------------------------
+std::string
+Realm::limiter_type(
+  const std::string dofName )
+{
+  std::string limiterType = "van-leer"; // default
+  std::map<std::string, bool>::const_iterator iter
+    = solutionOptions_->limiterTypeMap_.find(dofName);
+  if (iter != solutionOptions_->limiterTypeMap_.end()) {
+    limiterType = (*iter).second;
+  }
+  return limiterType;
+}
+
+//--------------------------------------------------------------------------
 //-------- get_lam_schmidt -------------------------------------------------
 //--------------------------------------------------------------------------
 double

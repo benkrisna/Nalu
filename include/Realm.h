@@ -334,6 +334,8 @@ class Realm {
     const std::string dofname);
   bool primitive_uses_limiter(
     const std::string dofname);
+  std::string limiter_type(
+      const std::string&) const;
   double get_lam_schmidt(
     const std::string dofname);
   double get_lam_prandtl(
