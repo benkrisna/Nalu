@@ -15,7 +15,8 @@
 
 namespace sierra{
 namespace nalu{
-  double van_leer_limiter(const double& dq, const double& dm, const double& small)
+  template<typename T>
+  T van_leer_limiter(const T& dq, const T& dm, const T& small)
   {
     // van Leer limiter
     // https://en.wikipedia.org/wiki/Van_Leer_limiter
