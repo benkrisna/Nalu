@@ -1,6 +1,7 @@
 # The base directory where mpi is located.  
 # From here you should be able to find include/mpi.h bin/mpicxx, bin/mpiexec, etc.
-mpi_base_dir=/path_to_mpi/mpi/openmpi/4.1.2
+# mpi_base_dir=/path_to_mpi/mpi/openmpi/4.1.2
+mpi_base_dir=/opt/intel/impi/2018.3.222/intel64/bin/mpicc
 nalu_install_dir=/path_to_install/install/gcc10.3.0
 
 # Note: Don't forget to set your LD_LIBRARY_PATH to $mpi_base_dir/lib
@@ -17,7 +18,8 @@ blas_install_lib=/usr/lib64/libblas.so.3
 lapack_install_lib=/usr/lib64/liblapack.so.3
 
 # Where trilinos will be installed
-trilinos_install_dir=$nalu_install_dir/Trilinos_stable_release
+#trilinos_install_dir=$nalu_install_dir/Trilinos_stable_release
+trilinos_install_dir=/home/benkris/codes/Trilinos/build
 
 echo "nalu_install_dir = \"$nalu_install_dir\""
 

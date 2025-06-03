@@ -4,6 +4,7 @@
 /build/libnalu.a
 /build/libnalu.so
 /build/naluX
+/build/unittestX
 /build/cmake_install.cmake
 /build/Makefile
 /build/CMakeCache.txt
