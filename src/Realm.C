@@ -4310,7 +4310,7 @@ Realm::primitive_uses_limiter(
 //--------------------------------------------------------------------------
 std::string
 Realm::limiter_type(
-  const std::string dofName )
+  const std::string dofName)
 {
   std::string limiterType = "van-leer"; // default
   std::map<std::string, bool>::const_iterator iter
