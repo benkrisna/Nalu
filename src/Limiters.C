@@ -30,5 +30,10 @@ namespace nalu{
       return 0.0;
     }
   }
+
+  // Explicit instantiation
+template stk::simd::Double van_leer_limiter<stk::simd::Double>(
+    const stk::simd::Double&, const stk::simd::Double&, const stk::simd::Double&);
+
 } // namespace nalu
 } // namespace Sierra
