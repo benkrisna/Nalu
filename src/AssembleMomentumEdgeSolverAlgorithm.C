@@ -13,6 +13,7 @@
 #include <LinearSystem.h>
 #include <PecletFunction.h>
 #include <Realm.h>
+#include "Limiters.h"
 
 #include <stk_mesh/base/BulkData.hpp>
 #include <stk_mesh/base/Field.hpp>
@@ -106,6 +107,10 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const std::string limiterType = realm_.get_limiter_type(dofName);
+  if (useLimiter) {
+    printf("AssembleMomentumEdgeSolverAlgorithm: using limiter %s\n", limiterType.c_str());
+  }
 
   // one minus flavor
   const double om_alpha = 1.0-alpha;
@@ -262,8 +267,8 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
           const double dq = uNp1R[i] - uNp1L[i];
           const double dqMl = 2.0*2.0*p_duL[i] - dq;
           const double dqMr = 2.0*2.0*p_duR[i] - dq;
-          p_limitL[i] = van_leer(dqMl, dq, small);
-          p_limitR[i] = van_leer(dqMr, dq, small);
+          p_limitL[i] = van_leer_limiter(dqMl, dq, small);
+          p_limitR[i] = van_leer_limiter(dqMr, dq, small);
         }
       }
 

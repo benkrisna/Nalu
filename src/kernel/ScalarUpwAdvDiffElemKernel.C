@@ -188,8 +188,6 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::execute(
       const DoubleType dq = v_scalarQ(ir) - v_scalarQ(il);
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      // limitL = van_leer(dqMl, dq);
-      // limitR = van_leer(dqMr, dq);
       limitL = van_leer_limiter<DoubleType>(dqMl, dq);
       limitR = van_leer_limiter<DoubleType>(dqMr, dq);
     }

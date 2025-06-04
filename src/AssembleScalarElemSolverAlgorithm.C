@@ -17,6 +17,7 @@
 #include <Realm.h>
 #include <SupplementalAlgorithm.h>
 #include <master_element/MasterElement.h>
+#include "Limiters.h"
 
 // stk_mesh/base/fem
 #include <stk_mesh/base/BulkData.hpp>
@@ -117,6 +118,10 @@ AssembleScalarElemSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const std::string limiterType = realm_.limiter_type(dofName);
+  if (useLimiter) {
+    printf("AssembleScalarElemSolverAlgorithm: using limiter %s\n", limiterType.c_str());
+  }
   const bool useShiftedGradOp = realm_.get_shifted_grad_op(dofName);
   const bool skewSymmetric = realm_.get_skew_symmetric(dofName);
 
@@ -350,8 +355,8 @@ AssembleScalarElemSolverAlgorithm::execute()
           const double dq = p_scalarQNp1[ir] - p_scalarQNp1[il];
           const double dqMl = 2.0*2.0*dqL - dq;
           const double dqMr = 2.0*2.0*dqR - dq;
-          limitL = van_leer(dqMl, dq, small);
-          limitR = van_leer(dqMr, dq, small);
+          limitL = van_leer_limiter(dqMl, dq, small);
+          limitR = van_leer_limiter(dqMr, dq, small);
         }
         
         // extrapolated; for now limit (along edge is fine)

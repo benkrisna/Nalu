@@ -9,6 +9,7 @@
 #include "AlgTraits.h"
 #include "master_element/MasterElement.h"
 #include "SolutionOptions.h"
+#include "Limiters.h"
 
 // template and scratch space
 #include "BuildTemplates.h"
@@ -32,6 +33,7 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsNoPstabUpwAd
   : Kernel(),
     hoUpwind_(solnOpts.get_upw_factor(vof->name())),
     useLimiter_(solnOpts.primitive_uses_limiter(vof->name())),
+    limiterType_(solnOpts.limiter_type(vof->name())),
     lrscv_(sierra::nalu::MasterElementRepo::get_surface_master_element(AlgTraits::topo_)->adjacentNodes())
 {
   // save off fields
@@ -62,6 +64,10 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsNoPstabUpwAd
 
   NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsNoPstabUpwAdvElemKernel hoUpwind/limit: " 
                                  << hoUpwind_ << "/" << useLimiter_ << std::endl;
+  if (useLimiter_) {
+    NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsNoPstabUpwAdvElemKernel limiter type: "
+                                   << limiterType_ << std::endl;
+  }
 }
 
 template<typename AlgTraits>
@@ -130,8 +136,8 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::execute(
       const DoubleType dq = v_vofNp1(ir) - v_vofNp1(il);
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = van_leer(dqMl, dq);
-      limitR = van_leer(dqMr, dq);
+      limitL = van_leer_limiter(dqMl, dq);
+      limitR = van_leer_limiter(dqMr, dq);
     }
 
     // extrapolated; for now limit (along edge is fine)

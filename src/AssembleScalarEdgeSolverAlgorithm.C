@@ -13,6 +13,7 @@
 #include <LinearSystem.h>
 #include <PecletFunction.h>
 #include <Realm.h>
+#include "Limiters.h"
 
 // stk_mesh/base/fem
 #include <stk_mesh/base/BulkData.hpp>
@@ -104,6 +105,10 @@ AssembleScalarEdgeSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const std::string typeLimiter = realm_.limiter_type(dofName);
+  if (useLimiter) {
+    printf("AssembleScalarEdgeSolverAlgorithm: using limiter %s\n", typeLimiter.c_str());
+  }
 
   // one minus flavor
   const double om_alpha = 1.0-alpha;
@@ -244,8 +249,8 @@ AssembleScalarEdgeSolverAlgorithm::execute()
       if ( useLimiter ) {
         const double dqMl = 2.0*2.0*dqL - dq;
         const double dqMr = 2.0*2.0*dqR - dq;
-        limitL = van_leer(dqMl, dq, small);
-        limitR = van_leer(dqMr, dq, small);
+        limitL = van_leer_limiter(dqMl, dq, small);
+        limitR = van_leer_limiter(dqMr, dq, small);
       }
       
       // extrapolated; for now limit

@@ -59,6 +59,7 @@ private:
   
   const double hoUpwind_;
   bool useLimiter_;
+  std::string limiterType_;
   
   // Integration point to node mapping
   const int* lrscv_;
