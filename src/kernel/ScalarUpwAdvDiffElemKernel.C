@@ -46,6 +46,7 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::ScalarUpwAdvDiffElemKernel(
     alphaUpw_(solnOpts.get_alpha_upw_factor(dofName_)),
     hoUpwind_(solnOpts.get_upw_factor(dofName_)),
     useLimiter_(solnOpts.primitive_uses_limiter(dofName_)),
+    limiterType_(solnOpts.limiter_type(dofName_)),
     om_alpha_(1.0 - alpha_),
     om_alphaUpw_(1.0 - alphaUpw_),
     shiftedGradOp_(solnOpts.get_shifted_grad_op(scalarQ->name())),
@@ -85,6 +86,19 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::ScalarUpwAdvDiffElemKernel(
     dataPreReqs.add_master_element_call(SCS_SHIFTED_GRAD_OP, CURRENT_COORDINATES);
   else
     dataPreReqs.add_master_element_call(SCS_GRAD_OP, CURRENT_COORDINATES);
+  // Limiter setup
+  if (useLimiter_) {
+    if (limiterType_ == "van_leer") {
+      limiterFunc_ = van_leer_limiter<DoubleType>;
+    } else {
+      NaluEnv::self().naluOutputP0() << "ScalarUpwAdvDiffElemKernel: "
+        << "Unknown limiter type: " << limiterType_ << std::endl;
+      throw std::runtime_error("Unknown limiter type");
+    }
+  } else {
+    limiterFunc_ = nullptr;
+  }
+
 }
 
 template<typename AlgTraits>
@@ -188,8 +202,8 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::execute(
       const DoubleType dq = v_scalarQ(ir) - v_scalarQ(il);
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = van_leer_limiter<DoubleType>(dqMl, dq);
-      limitR = van_leer_limiter<DoubleType>(dqMr, dq);
+      limitL = limiterFunc_(dqMl, dq);
+      limitR = limiterFunc_(dqMr, dq);
     }
 
     // extrapolated; for now limit (along edge is fine)

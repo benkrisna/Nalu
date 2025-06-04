@@ -123,9 +123,15 @@ AssembleMomentumElemSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  double (*limiterFunc)(const double&, const double &, const double&) = nullptr;
   const std::string limiterType = realm_.limiter_type(dofName);
   if (useLimiter) {
     printf("AssembleMomentumElemSolverAlgorithm: using limiter %s\n", limiterType.c_str());
+    if (limiterType == "van_leer") {
+      limiterFunc = van_leer_limiter<double>;
+    } else {
+      throw std::runtime_error("AssembleMomentumElemSolverAlgorithm: Unknown limiter type: " + limiterType);
+    }
   }
   const bool useShiftedGradOp = realm_.get_shifted_grad_op(dofName);
   const bool skewSymmetric = realm_.get_skew_symmetric(dofName);
@@ -399,8 +405,8 @@ AssembleMomentumElemSolverAlgorithm::execute()
             const double dq = p_velocityNp1[irNdim+i] - p_velocityNp1[ilNdim+i];
             const double dqMl = 2.0*2.0*p_duL[i] - dq;
             const double dqMr = 2.0*2.0*p_duR[i] - dq;
-            p_limitL[i] = van_leer_limiter(dqMl, dq, small);
-            p_limitR[i] = van_leer_limiter(dqMr, dq, small);
+            p_limitL[i] = limiterFunc(dqMl, dq, small);
+            p_limitR[i] = limiterFunc(dqMr, dq, small);
           }
         }
 	

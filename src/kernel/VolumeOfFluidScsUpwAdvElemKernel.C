@@ -65,6 +65,13 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsUpwAdvElemKernel(
   if (useLimiter_) {
     NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsUpwAdvElemKernel limiter type: " 
                                    << limiterType_ << std::endl;
+    if (limiterType_ == "van_leer") {
+      limiterFunc_ = van_leer_limiter<DoubleType>;
+    } else {
+      NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsUpwAdvElemKernel: "
+        << "Unknown limiter type: " << limiterType_ << std::endl;
+      throw std::runtime_error("Unknown limiter type");
+    }
   }
 }
 
@@ -127,8 +134,8 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::execute(
       const DoubleType dq = v_vofNp1(ir) - v_vofNp1(il);
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = van_leer_limiter(dqMl, dq);
-      limitR = van_leer_limiter(dqMr, dq);
+      limitL = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
+      limitR  limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
     }
 
     // extrapolated; for now limit (along edge is fine)

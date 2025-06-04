@@ -106,8 +106,14 @@ AssembleScalarEdgeSolverAlgorithm::execute()
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
   const std::string typeLimiter = realm_.limiter_type(dofName);
+  double (limiterFunc*)(const double&, const double &, const double&) = nullptr;
   if (useLimiter) {
     printf("AssembleScalarEdgeSolverAlgorithm: using limiter %s\n", typeLimiter.c_str());
+    if (typeLimiter == "van_leer") {
+      limiterFunc = van_leer_limiter<double>;
+    } else {
+      throw std::runtime_error("AssembleScalarEdgeSolverAlgorithm: Unknown limiter type: " + typeLimiter);
+    }
   }
 
   // one minus flavor
@@ -249,8 +255,8 @@ AssembleScalarEdgeSolverAlgorithm::execute()
       if ( useLimiter ) {
         const double dqMl = 2.0*2.0*dqL - dq;
         const double dqMr = 2.0*2.0*dqR - dq;
-        limitL = van_leer_limiter(dqMl, dq, small);
-        limitR = van_leer_limiter(dqMr, dq, small);
+        limitL = limiterFunc(dqMl, dq, small);
+        limitR = limiterFunc(dqMr, dq, small);
       }
       
       // extrapolated; for now limit
