@@ -87,6 +87,13 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::MomentumUpwAdvDiffElemKernel(
     dataPreReqs.add_master_element_call(SCS_GRAD_OP, CURRENT_COORDINATES);
   if (useLimiter_) {
     printf("MomentumUpwAdvDiffElemKernel: using limiter %s\n", limiterType_.c_str());
+    if (limiterType_ == "van_leer") {
+      limiterFunc_ = van_leer_limiter<DoubleType>;
+    } else {
+      NaluEnv::self().naluOutputP0() << "MomentumUpwAdvDiffElemKernel: "
+        << "Unknown limiter type: " << limiterType_ << std::endl;
+      throw std::runtime_error("Unknown limiter type");
+    }
   }
 }
 
@@ -207,8 +214,8 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::execute(
         const DoubleType dq = v_uNp1(ir,i) - v_uNp1(il,i);
         const DoubleType dqMl = 2.0*2.0*w_duL[i] - dq;
         const DoubleType dqMr = 2.0*2.0*w_duR[i] - dq;
-        w_limitL[i] = van_leer_limiter(dqMl, dq);
-        w_limitR[i] = van_leer_limiter(dqMr, dq);
+        w_limitL[i] = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
+        w_limitR[i] = limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
       }
     }
     

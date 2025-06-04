@@ -119,8 +119,14 @@ AssembleScalarElemSolverAlgorithm::execute()
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
   const std::string limiterType = realm_.limiter_type(dofName);
+  double (*limiterFunc)(const double&, const double&, const double&);
   if (useLimiter) {
     printf("AssembleScalarElemSolverAlgorithm: using limiter %s\n", limiterType.c_str());
+    if (limiterType == "van_leer") {
+      limiterFunc = van_leer_limiter<double>;
+    } else {
+      throw std::runtime_error("AssembleScalarElemSolverAlgorithm: Unknown limiter type: " + limiterType);
+    }
   }
   const bool useShiftedGradOp = realm_.get_shifted_grad_op(dofName);
   const bool skewSymmetric = realm_.get_skew_symmetric(dofName);
@@ -355,8 +361,8 @@ AssembleScalarElemSolverAlgorithm::execute()
           const double dq = p_scalarQNp1[ir] - p_scalarQNp1[il];
           const double dqMl = 2.0*2.0*dqL - dq;
           const double dqMr = 2.0*2.0*dqR - dq;
-          limitL = van_leer_limiter(dqMl, dq, small);
-          limitR = van_leer_limiter(dqMr, dq, small);
+          limitL = limiterFunc(dqMl, dq, small);
+          limitR = limiterFunc(dqMr, dq, small);
         }
         
         // extrapolated; for now limit (along edge is fine)
