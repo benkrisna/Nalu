@@ -67,6 +67,17 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsNoPstabUpwAd
   if (useLimiter_) {
     NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsNoPstabUpwAdvElemKernel limiter type: "
                                    << limiterType_ << std::endl;
+
+    switch (limiterType_) {
+      case "van_leer":
+        limiterFunc = van_leer_limiter;
+        break;
+      default:
+        NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsNoPstabUpwAdvElemKernel: "
+                                       << "Unknown limiter type: " << limiterType_ << std::endl;
+        throw std::runtime_error("Unknown limiter type");
+        break;
+    }
   }
 }
 
