@@ -24,6 +24,7 @@ namespace nalu{
     return limit;
   }
 
+template double van_leer_limiter<double>(const double&, const double&, const double&);
 #ifdef STK_HAVE_SIMD
 template DoubleType van_leer_limiter<DoubleType>(const DoubleType&, const DoubleType&, const DoubleType&);
 #endif
