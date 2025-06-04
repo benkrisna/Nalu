@@ -826,7 +826,7 @@ SolutionOptions::primitive_uses_limiter(const std::string& dofName) const
 std::string
 SolutionOptions::limiter_type(const std::string& dofName) const
 {
-  std::string limiterType = "van-leer"; // default
+  std::string limiterType = "van_leer"; // default
   auto iter = limiterTypeMap_.find(dofName);
   if (iter != limiterTypeMap_.end())
     limiterType = iter->second;
