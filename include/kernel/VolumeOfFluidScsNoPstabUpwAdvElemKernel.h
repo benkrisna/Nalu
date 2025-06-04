@@ -60,9 +60,7 @@ private:
   const double hoUpwind_;
   bool useLimiter_;
   std::string limiterType_;
-  DoubleType limiterFunc(const DoubleType &dqm,
-                     const DoubleType &dqp,
-                     const DoubleType &small = 1.0e-16);
+  DoubleType (*limiterFunc)(const DoubleType&, const DoubleType &, const DoubleType&);
   
   // Integration point to node mapping
   const int* lrscv_;
