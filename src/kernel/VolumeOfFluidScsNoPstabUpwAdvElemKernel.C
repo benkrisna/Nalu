@@ -144,8 +144,8 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::execute(
       const DoubleType dq = v_vofNp1(ir) - v_vofNp1(il);
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = limiterFunc(dqMl, dq);
-      limitR = limiterFunc(dqMr, dq);
+      limitL = limiterFunc(dqMl, dq, small_);
+      limitR = limiterFunc(dqMr, dq, small_);
     }
 
     // extrapolated; for now limit (along edge is fine)
