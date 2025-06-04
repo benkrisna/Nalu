@@ -11,6 +11,7 @@
 #include "SolutionOptions.h"
 #include "EquationSystem.h"
 #include "PecletFunction.h"
+#include "Limiters.h"
 
 // template and scratch space
 #include "BuildTemplates.h"
@@ -44,6 +45,7 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::MomentumUpwAdvDiffElemKernel(
     alphaUpw_(solnOpts.get_alpha_upw_factor(dofName_)),
     hoUpwind_(solnOpts.get_upw_factor(dofName_)),
     useLimiter_(solnOpts.primitive_uses_limiter(dofName_)),
+    limiterType_(solnOpts.limiter_type(dofName_)),
     om_alpha_(1.0 - alpha_),
     om_alphaUpw_(1.0 - alphaUpw_),
     includeDivU_(solnOpts.includeDivU_),
@@ -83,6 +85,9 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::MomentumUpwAdvDiffElemKernel(
     dataPreReqs.add_master_element_call(SCS_SHIFTED_GRAD_OP, CURRENT_COORDINATES);
   else
     dataPreReqs.add_master_element_call(SCS_GRAD_OP, CURRENT_COORDINATES);
+  if (useLimiter_) {
+    printf("MomentumUpwAdvDiffElemKernel: using limiter %s\n", limiterType_.c_str());
+  }
 }
 
 template<class AlgTraits>
@@ -202,8 +207,8 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::execute(
         const DoubleType dq = v_uNp1(ir,i) - v_uNp1(il,i);
         const DoubleType dqMl = 2.0*2.0*w_duL[i] - dq;
         const DoubleType dqMr = 2.0*2.0*w_duR[i] - dq;
-        w_limitL[i] = van_leer(dqMl, dq);
-        w_limitR[i] = van_leer(dqMr, dq);
+        w_limitL[i] = van_leer_limiter(dqMl, dq);
+        w_limitR[i] = van_leer_limiter(dqMr, dq);
       }
     }
     

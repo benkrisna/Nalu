@@ -78,6 +78,7 @@ private:
   double alphaUpw_;
   double hoUpwind_;
   bool useLimiter_;
+  std::string limiterType_;
   double om_alpha_;
   double om_alphaUpw_;
   const double includeDivU_;
