@@ -106,7 +106,7 @@ AssembleScalarEdgeSolverAlgorithm::execute()
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
   const std::string typeLimiter = realm_.limiter_type(dofName);
-  double (limiterFunc*)(const double&, const double &, const double&) = nullptr;
+  double (*limiterFunc)(const double&, const double &, const double&) = nullptr;
   if (useLimiter) {
     printf("AssembleScalarEdgeSolverAlgorithm: using limiter %s\n", typeLimiter.c_str());
     if (typeLimiter == "van_leer") {

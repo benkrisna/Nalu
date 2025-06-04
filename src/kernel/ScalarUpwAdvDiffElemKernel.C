@@ -202,8 +202,8 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::execute(
       const DoubleType dq = v_scalarQ(ir) - v_scalarQ(il);
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = limiterFunc_(dqMl, dq);
-      limitR = limiterFunc_(dqMr, dq);
+      limitL = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
+      limitR = limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
     }
 
     // extrapolated; for now limit (along edge is fine)
