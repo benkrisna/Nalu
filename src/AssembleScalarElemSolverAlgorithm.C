@@ -124,6 +124,12 @@ AssembleScalarElemSolverAlgorithm::execute()
     printf("AssembleScalarElemSolverAlgorithm: using limiter %s\n", limiterType.c_str());
     if (limiterType == "van_leer") {
       limiterFunc = van_leer_limiter<double>;
+    } else if (limiterType== "minmod") {
+      limiterFunc = minmod_limiter<double>;
+    } else if (limiterType == "superbee") {
+      limiterFunc = superbee_limiter<double>;
+    } else if (limiterType == "ultrabee") {
+      limiterFunc = ultrabee_limiter<double>;
     } else {
       throw std::runtime_error("AssembleScalarElemSolverAlgorithm: Unknown limiter type: " + limiterType);
     }

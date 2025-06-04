@@ -111,6 +111,12 @@ AssembleScalarEdgeSolverAlgorithm::execute()
     printf("AssembleScalarEdgeSolverAlgorithm: using limiter %s\n", typeLimiter.c_str());
     if (typeLimiter == "van_leer") {
       limiterFunc = van_leer_limiter<double>;
+    } else if (typeLimiter == "minmod") {
+      limiterFunc = minmod_limiter<double>;
+    } else if (typeLimiter == "superbee") {
+      limiterFunc = superbee_limiter<double>;
+    } else if (typeLimiter == "ultrabee") {
+      limiterFunc = ultrabee_limiter<double>;
     } else {
       throw std::runtime_error("AssembleScalarEdgeSolverAlgorithm: Unknown limiter type: " + typeLimiter);
     }

@@ -24,9 +24,51 @@ namespace nalu{
     return limit;
   }
 
+  template<typename T>
+  T minmod_limiter(const T& dq, const T& dm, const T& small)
+  {
+    // minmod_limiter
+    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
+      ((dm+dq)*(dm+dq)+small);
+    return limit;
+  }
+
+  template<typename T>
+  T superbee_limiter(const T& dq, const T& dm, const T& small)
+  {
+    // superbee_limiter
+    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
+      ((dm+dq)*(dm+dq)+small);
+    return limit;
+  }
+
+  template<typename T>
+  T ultrabee_limiter(const T& dq, const T& dm, const T& small)
+  {
+    // ultrabee_limiter
+    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
+      ((dm+dq)*(dm+dq)+small);
+    return limit;
+  }
+
 template double van_leer_limiter<double>(const double&, const double&, const double&);
 #ifdef STK_HAVE_SIMD
 template DoubleType van_leer_limiter<DoubleType>(const DoubleType&, const DoubleType&, const DoubleType&);
+#endif
+
+template double minmod_limiter<double>(const double&, const double&, const double&);
+#ifdef STK_HAVE_SIMD
+template DoubleType minmod_limiter<DoubleType>(const DoubleType&, const DoubleType&, const DoubleType&);
+#endif
+
+template double superbee_limiter<double>(const double&, const double&, const double&);
+#ifdef STK_HAVE_SIMD
+template DoubleType superbee_limiter<DoubleType>(const DoubleType&, const DoubleType&, const DoubleType&);
+#endif
+
+template double ultrabee_limiter<double>(const double&, const double&, const double&);
+#ifdef STK_HAVE_SIMD
+template DoubleType ultrabee_limiter<DoubleType>(const DoubleType&, const DoubleType&, const DoubleType&);
 #endif
 
 } // namespace nalu

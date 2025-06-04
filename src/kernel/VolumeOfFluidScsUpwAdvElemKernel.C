@@ -67,6 +67,12 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsUpwAdvElemKernel(
                                    << limiterType_ << std::endl;
     if (limiterType_ == "van_leer") {
       limiterFunc_ = van_leer_limiter<DoubleType>;
+    } else if (limiterType_== "minmod") {
+      limiterFunc_ = minmod_limiter<DoubleType>;
+    } else if (limiterType_ == "superbee") {
+      limiterFunc_ = superbee_limiter<DoubleType>;
+    } else if (limiterType_ == "ultrabee") {
+      limiterFunc_ = ultrabee_limiter<DoubleType>;
     } else {
       NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsUpwAdvElemKernel: "
         << "Unknown limiter type: " << limiterType_ << std::endl;

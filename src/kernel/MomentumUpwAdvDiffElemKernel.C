@@ -89,6 +89,12 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::MomentumUpwAdvDiffElemKernel(
     printf("MomentumUpwAdvDiffElemKernel: using limiter %s\n", limiterType_.c_str());
     if (limiterType_ == "van_leer") {
       limiterFunc_ = van_leer_limiter<DoubleType>;
+    } else if (limiterType_ == "minmod") {
+      limiterFunc_ = minmod_limiter<DoubleType>;
+    } else if (limiterType_ == "superbee") {
+      limiterFunc_ = superbee_limiter<DoubleType>;
+    } else if (limiterType_ == "ultrabee") {
+      limiterFunc_ = ultrabee_limiter<DoubleType>;
     } else {
       NaluEnv::self().naluOutputP0() << "MomentumUpwAdvDiffElemKernel: "
         << "Unknown limiter type: " << limiterType_ << std::endl;
