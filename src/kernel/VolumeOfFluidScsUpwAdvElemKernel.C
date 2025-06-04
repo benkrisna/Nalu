@@ -135,7 +135,7 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::execute(
       const DoubleType dqMl = 2.0*2.0*dqL - dq;
       const DoubleType dqMr = 2.0*2.0*dqR - dq;
       limitL = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
-      limitR  limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
+      limitR = limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
     }
 
     // extrapolated; for now limit (along edge is fine)
