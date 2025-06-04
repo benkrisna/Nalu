@@ -107,7 +107,7 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
-  const std::string limiterType = realm_.get_limiter_type(dofName);
+  const std::string limiterType = realm_.limiter_type(dofName);
   if (useLimiter) {
     printf("AssembleMomentumEdgeSolverAlgorithm: using limiter %s\n", limiterType.c_str());
   }
