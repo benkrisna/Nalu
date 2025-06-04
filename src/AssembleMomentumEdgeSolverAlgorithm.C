@@ -114,7 +114,7 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
     printf("AssembleMomentumEdgeSolverAlgorithm: using limiter %s\n", limiterType.c_str());
     if (limiterType == "van_leer") {
       limiterFunc = van_leer_limiter<double>;
-    } else{ {
+    } else {
       throw std::runtime_error("AssembleMomentumEdgeSolverAlgorithm: Unknown limiter type: " + limiterType);
     }
   }
