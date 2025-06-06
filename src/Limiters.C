@@ -28,7 +28,7 @@ namespace nalu{
     // Minmod limiter
     const T prod = dm * dq;
     const T minAbs = stk::math::min(stk::math::abs(dm), stk::math::abs(dq));
-    const T limiter = stk::math::if_else(prod > 0.0, minAbs, T(0.0));
+    const T limiter = stk::math::if_then_else(prod > 0.0, minAbs, T(0.0));
     return limiter / (stk::math::abs(dm) + small);
   }
 
@@ -43,7 +43,7 @@ namespace nalu{
     const T min2 = stk::math::min(stk::math::abs(dq), two_dm);
     const T maxMin = stk::math::max(min1, min2);
 
-    const T limiter = stk::math::if_else(prod > 0.0, maxMin, T(0.0));
+    const T limiter = stk::math::if_then_else(prod > 0.0, maxMin, T(0.0));
     return limiter / (stk::math::abs(dm) + small);
   }
 
@@ -59,7 +59,7 @@ namespace nalu{
     const T one_plus = abs_dm + abs_dq;
 
     const T minAll = stk::math::min(stk::math::min(two_dm, two_dq), one_plus);
-    const T limiter = stk::math::if_else(prod > 0.0, minAll, T(0.0));
+    const T limiter = stk::math::if_then_else(prod > 0.0, minAll, T(0.0));
     return limiter / (abs_dm + small);
   }
 
