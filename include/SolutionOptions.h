@@ -72,6 +72,8 @@ public:
   bool primitive_uses_limiter(const std::string&) const;
   std::string limiter_type(const std::string&) const;
 
+  double get_kappa_muscl_factor(const std::string&) const;
+
   bool get_shifted_grad_op(const std::string&) const;
   
   bool get_skew_symmetric(const std::string&) const;
@@ -90,6 +92,7 @@ public:
   double hybridDefault_;
   double alphaDefault_;
   double alphaUpwDefault_;
+  double kappaMusclDefault_;
   double upwDefault_;
   double lamScDefault_;
   double turbScDefault_;
@@ -164,6 +167,7 @@ public:
   std::map<std::string, double> alphaUpwMap_;
   std::map<std::string, double> upwMap_;
   std::map<std::string, bool> limiterMap_;
+  std::map<std::string, double> kappaMusclMap_;
   std::map<std::string, std::string> limiterTypeMap_;
   std::map<std::string, std::string> tanhFormMap_;
   std::map<std::string, double> tanhTransMap_;

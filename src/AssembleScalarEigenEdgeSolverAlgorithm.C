@@ -149,6 +149,7 @@ AssembleScalarEigenEdgeSolverAlgorithm::execute()
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
   const std::string limiterType = realm_.limiter_type(dofName);
+  const double kappaMuscl = realm_.get_kappa_muscl_factor(dofName);
   double (*limiterFunc)(const double&, const double &, const double&) = nullptr;
   if (useLimiter) {
     printf("AssembleScalarEigenEdgeSolverAlgorithm: using limiter %s\n", limiterType.c_str());

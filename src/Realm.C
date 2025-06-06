@@ -5046,5 +5046,21 @@ std::string Realm::get_quad_type() const
   return solutionOptions_->quadType_;
 }
 
+//--------------------------------------------------------------------------
+//-------- get_kappa_muscl_factor() --------------------------------
+//--------------------------------------------------------------------------
+double
+Realm::get_kappa_muscl_factor(
+ const std::string dofName)
+{
+  double factor = -1.0; // default
+  std::map<std::string, double>::const_iterator iter
+    = solutionOptions_->kappaMusclMap_.find(dofName);
+  if (iter != solutionOptions_->kappaMusclMap_.end()) {
+    factor = (*iter).second;
+  }
+  return factor;
+} // get_kappa_muscl_factor
+
 } // namespace nalu
 } // namespace Sierra

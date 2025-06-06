@@ -32,6 +32,7 @@ SolutionOptions::SolutionOptions()
   : hybridDefault_(0.0),
     alphaDefault_(0.0),
     alphaUpwDefault_(1.0),
+    kappaMusclDefault_(-1.0),
     upwDefault_(1.0),
     lamScDefault_(1.0),
     turbScDefault_(1.0),
@@ -261,6 +262,9 @@ SolutionOptions::load(const YAML::Node & y_node)
         }
         else if (expect_map(y_option, "upw_factor", optional)) {
           y_option["upw_factor"] >> upwMap_ ;
+        }
+        else if (expect_map(y_option, "kappa_muscl", optional)) {
+          y_option["kappa_muscl"] >>  kappaMusclMap_;
         }
         else if (expect_map(y_option, "limiter", optional)) {
           y_option["limiter"] >> limiterMap_ ;
@@ -843,6 +847,8 @@ SolutionOptions::limiter_type(const std::string& dofName) const
   return limiterType;
 }
 
+
+
 bool
 SolutionOptions::get_shifted_grad_op(const std::string& dofName) const
 {
@@ -920,6 +926,23 @@ void SolutionOptions::set_consolidated_bc_solver_alg()
 {
   useConsolidatedBcSolverAlg_ = true;
 }
+
+//--------------------------------------------------------------------------
+//-------- get_kappa_muscl_factor() ----------------------------------------
+//--------------------------------------------------------------------------
+double
+SolutionOptions::get_kappa_muscl_factor(
+   const std::string& dofName) const {
+  double factor = kappaMusclDefault_;
+  std::map<std::string, double>::const_iterator iter = kappaMusclMap_.find(dofName);
+  if (iter != kappaMusclMap_.end()) {
+    factor = (*iter).second;
+  }
+  NaluEnv::self().naluOutputP0() << "SolutionOptions::get_kappa_muscl_factor() for dofName: " << dofName
+                                 << " kappa_muscl factor: " << factor << std::endl;
+
+  return factor;
+} // get_kappa_muscl_factor
 
 } // namespace nalu
 } // namespace Sierra

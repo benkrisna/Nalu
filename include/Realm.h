@@ -336,6 +336,8 @@ class Realm {
     const std::string dofname);
   std::string limiter_type(
       const std::string dofname);
+  double get_kappa_muscl_factor(
+    const std::string dofname);
   double get_lam_schmidt(
     const std::string dofname);
   double get_lam_prandtl(
