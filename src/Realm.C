@@ -4318,6 +4318,9 @@ Realm::limiter_type(
   if (iter != solutionOptions_->limiterTypeMap_.end()) {
     limiterType = (*iter).second;
   }
+  // print limiter type
+  NaluEnv::self().naluOutputP0() << "Realm::limiter_type() for dofName: "
+    << dofName << " is: " << limiterType << std::endl;
   return limiterType;
 }
 

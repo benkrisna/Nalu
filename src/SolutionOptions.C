@@ -831,6 +831,9 @@ SolutionOptions::limiter_type(const std::string& dofName) const
   if (iter != limiterTypeMap_.end())
     limiterType = iter->second;
 
+  NaluEnv::self().naluOutputP0() << "SolutionOptions::limiter_type() for dofName: " << dofName
+                                 << " limiter type: " << limiterType << std::endl;
+
   return limiterType;
 }
 
