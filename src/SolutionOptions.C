@@ -831,6 +831,10 @@ SolutionOptions::limiter_type(const std::string& dofName) const
   if (iter != limiterTypeMap_.end())
     limiterType = iter->second;
 
+  if (limiterType != "van_leer" && limiterType != "minmod" &&
+      limiterType != "superbee" && limiterType != "ultrabee") {
+    throw std::runtime_error("SolutionOptions::limiter_type() called with unknown limiter type: " + limiterType);
+  }
   NaluEnv::self().naluOutputP0() << "SolutionOptions::limiter_type() for dofName: " << dofName
                                  << " limiter type: " << limiterType << std::endl;
 

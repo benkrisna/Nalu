@@ -4318,6 +4318,16 @@ Realm::limiter_type(
   if (iter != solutionOptions_->limiterTypeMap_.end()) {
     limiterType = (*iter).second;
   }
+  if (limiterType != "van_leer" &&
+      limiterType != "minmod" &&
+      limiterType != "superbee" &&
+      limiterType != "none") {
+    NaluEnv::self().naluOutputP0() << "Realm::limiter_type() for dofName: "
+      << dofName << " is not a valid limiter type: " << limiterType << std::endl;
+    throw std::runtime_error(
+      "Realm::limiter_type() for dofName: " + dofName +
+      " is not a valid limiter type: " + limiterType);
+  }
   // print limiter type
   NaluEnv::self().naluOutputP0() << "Realm::limiter_type() for dofName: "
     << dofName << " is: " << limiterType << std::endl;
