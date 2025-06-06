@@ -16,8 +16,7 @@
 namespace sierra{
 namespace nalu{
   template<typename T>
-  T van_leer_limiter(const T& dq, const T& dm, const T& small)
-  {
+  T van_leer_limiter(const T& dq, const T& dm, const T& small) {
     // van Leer limiter
     T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
       ((dm+dq)*(dm+dq)+small);
@@ -25,17 +24,14 @@ namespace nalu{
   }
 
   template<typename T>
-  T minmod_limiter(const T& dq, const T& dm, const T& small)
-  {
+  T minmod_limiter(const T& dq, const T& dm, const T& small) {
     // Minmod limiter
     const T r = dq / (dm + small);
     return stk::math::max(T(0.0), stk::math::min(T(1.0), r));
-}
   }
 
   template<typename T>
-  T superbee_limiter(const T& dq, const T& dm, const T& small)
-  {
+  T superbee_limiter(const T& dq, const T& dm, const T& small) {
     // superbee_limiter
     const T r = dq / (dm + small);
     const T a = stk::math::min(2.0 * r, T(1.0));
@@ -44,12 +40,11 @@ namespace nalu{
   }
 
   template<typename T>
-  T ultrabee_limiter(const T& dq, const T& dm, const T& small)
-  {
+  T ultrabee_limiter(const T& dq, const T& dm, const T& small) {
     // ultrabee_limiter
     const T r = dq / (dm + small);
     const T limit = stk::math::min(T(2.0), stk::math::min(2.0 * r, 1.0 + r));
-    return stk::math::if_else(r > 0.0, limit, T(0.0));
+    return stk::math::if_then_else(r > 0.0, limit, T(0.0));
   }
 
 template double van_leer_limiter<double>(const double&, const double&, const double&);
