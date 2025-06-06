@@ -28,17 +28,18 @@ namespace nalu{
   T minmod_limiter(const T& dq, const T& dm, const T& small)
   {
     // minmod_limiter
-    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
-      ((dm+dq)*(dm+dq)+small);
+    T r = dq / (dm + small);
+    T limit = std::max(T(0.0), std::min(T(1.0), r));
     return limit;
+}
   }
 
   template<typename T>
   T superbee_limiter(const T& dq, const T& dm, const T& small)
   {
     // superbee_limiter
-    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
-      ((dm+dq)*(dm+dq)+small);
+    T r = dq / (dm + small);
+    T limit = std::max({T(0.0), std::min(T(2.0 * r), T(1.0)), std::min(r, T(2.0))});
     return limit;
   }
 
@@ -46,9 +47,11 @@ namespace nalu{
   T ultrabee_limiter(const T& dq, const T& dm, const T& small)
   {
     // ultrabee_limiter
-    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
-      ((dm+dq)*(dm+dq)+small);
-    return limit;
+    T r = dq / (dm + small);
+    if (r <= 0.0)
+      return 0.0;
+    else
+      return std::min({T(2.0), T(2.0 * r), T(1.0 + r)});
   }
 
 template double van_leer_limiter<double>(const double&, const double&, const double&);
