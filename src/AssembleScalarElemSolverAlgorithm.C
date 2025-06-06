@@ -130,6 +130,8 @@ AssembleScalarElemSolverAlgorithm::execute()
       limiterFunc = superbee_limiter<double>;
     } else if (limiterType == "ultrabee") {
       limiterFunc = ultrabee_limiter<double>;
+    } else if (limiterType == "default") {
+      limiterFunc = default_limiter<double>;
     } else {
       throw std::runtime_error("AssembleScalarElemSolverAlgorithm: Unknown limiter type: " + limiterType);
     }

@@ -4312,7 +4312,7 @@ std::string
 Realm::limiter_type(
   const std::string dofName)
 {
-  std::string limiterType = "van_leer"; // default
+  std::string limiterType = "default"; // default
   std::map<std::string, std::string>::const_iterator iter
     = solutionOptions_->limiterTypeMap_.find(dofName);
   if (iter != solutionOptions_->limiterTypeMap_.end()) {
@@ -4321,7 +4321,9 @@ Realm::limiter_type(
   if (limiterType != "van_leer" &&
       limiterType != "minmod" &&
       limiterType != "superbee" &&
-      limiterType != "ultrabee") {
+      limiterType != "ultrabee" &&
+      limiterType != "default"
+      ) {
     NaluEnv::self().naluOutputP0() << "Realm::limiter_type() for dofName: "
       << dofName << " is not a valid limiter type: " << limiterType << std::endl;
     throw std::runtime_error(

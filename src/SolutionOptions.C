@@ -826,13 +826,15 @@ SolutionOptions::primitive_uses_limiter(const std::string& dofName) const
 std::string
 SolutionOptions::limiter_type(const std::string& dofName) const
 {
-  std::string limiterType = "van_leer"; // default
+  std::string limiterType = "default";
   auto iter = limiterTypeMap_.find(dofName);
   if (iter != limiterTypeMap_.end())
     limiterType = iter->second;
 
   if (limiterType != "van_leer" && limiterType != "minmod" &&
-      limiterType != "superbee" && limiterType != "ultrabee") {
+      limiterType != "superbee" && limiterType != "ultrabee" &&
+      limiterType != "default"
+      ) {
     throw std::runtime_error("SolutionOptions::limiter_type() called with unknown limiter type: " + limiterType);
   }
   NaluEnv::self().naluOutputP0() << "SolutionOptions::limiter_type() for dofName: " << dofName

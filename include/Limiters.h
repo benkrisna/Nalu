@@ -13,6 +13,9 @@ namespace sierra{
 namespace nalu{
 
 template<typename T>
+T default_limiter(const T& dq, const T& dm, const T& small=1e-10);
+
+template<typename T>
 T van_leer_limiter(const T& dq, const T& dm, const T& small=1e-10);
 
 template<typename T>

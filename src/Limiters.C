@@ -16,8 +16,16 @@
 namespace sierra{
 namespace nalu{
   template<typename T>
+  T default_limiter(const T& dq, const T& dm, const T& small) {
+    //default limiter which was assumed to be van-Leer, but not really..
+    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
+      ((dm+dq)*(dm+dq)+small);
+    return limit;
+  }
+
+  template<typename T>
   T van_leer_limiter(const T& dq, const T& dm, const T& small) {
-    // van Leer limiter
+    // van Leer limiter TODO: this is wrong
     T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
       ((dm+dq)*(dm+dq)+small);
     return limit;
@@ -46,6 +54,11 @@ namespace nalu{
     const T limit = stk::math::min(T(2.0), stk::math::min(2.0 * r, 1.0 + r));
     return stk::math::if_then_else(r > 0.0, limit, T(0.0));
   }
+
+template double default_limiter<double>(const double&, const double&, const double&);
+#ifdef STK_HAVE_SIMD
+template DoubleType default_limiter<DoubleType>(const DoubleType&, const DoubleType&, const DoubleType&);
+#endif
 
 template double van_leer_limiter<double>(const double&, const double&, const double&);
 #ifdef STK_HAVE_SIMD

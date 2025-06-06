@@ -117,6 +117,8 @@ AssembleScalarEdgeSolverAlgorithm::execute()
       limiterFunc = superbee_limiter<double>;
     } else if (typeLimiter == "ultrabee") {
       limiterFunc = ultrabee_limiter<double>;
+    } else if (typeLimiter == "default") {
+      limiterFunc = default_limiter<double>;
     } else {
       throw std::runtime_error("AssembleScalarEdgeSolverAlgorithm: Unknown limiter type: " + typeLimiter);
     }
