@@ -37,6 +37,7 @@ SolutionOptions::SolutionOptions()
     lamScDefault_(1.0),
     turbScDefault_(1.0),
     turbPrDefault_(1.0),
+    musclDefault_(false),
     nocDefault_(true),
     shiftedGradOpDefault_(false),
     skewSymmetricDefault_(false),
@@ -262,6 +263,9 @@ SolutionOptions::load(const YAML::Node & y_node)
         }
         else if (expect_map(y_option, "upw_factor", optional)) {
           y_option["upw_factor"] >> upwMap_ ;
+        }
+        else if (expect_map(y_option, "muscl", optional)) {
+          y_option["muscl"] >> useMusclMap_;
         }
         else if (expect_map(y_option, "kappa_muscl", optional)) {
           y_option["kappa_muscl"] >>  kappaMusclMap_;
@@ -927,6 +931,22 @@ void SolutionOptions::set_consolidated_bc_solver_alg()
   useConsolidatedBcSolverAlg_ = true;
 }
 
+// MUSCL
+//--------------------------------------------------------------------------
+//-------- get_muscl_usage() ------------------------------------------
+//--------------------------------------------------------------------------
+bool
+SolutionOptions::get_muscl_usage(
+  const std::string &dofName ) const
+{
+  bool useMuscl = musclDefault_;
+  std::map<std::string, bool>::const_iterator iter
+    = useMusclMap_.find(dofName);
+  if (iter != useMusclMap_.end()) {
+     useMuscl = (*iter).second;
+  }
+  return useMuscl;
+}
 //--------------------------------------------------------------------------
 //-------- get_kappa_muscl_factor() ----------------------------------------
 //--------------------------------------------------------------------------

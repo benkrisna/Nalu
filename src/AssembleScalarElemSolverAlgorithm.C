@@ -118,6 +118,7 @@ AssembleScalarElemSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const bool useMuscl = realm_.get_muscl_usage(dofName);
   const std::string limiterType = realm_.limiter_type(dofName);
   double (*limiterFunc)(const double&, const double&, const double&);
   if (useLimiter) {
@@ -136,6 +137,11 @@ AssembleScalarElemSolverAlgorithm::execute()
       throw std::runtime_error("AssembleScalarElemSolverAlgorithm: Unknown limiter type: " + limiterType);
     }
   }
+
+  if ( useMuscl ) {
+    NaluEnv::self().naluOutputP0() << "AssembleScalarElemSolverAlgorithm: using MUSCL." << std::endl;
+  }
+
   const bool useShiftedGradOp = realm_.get_shifted_grad_op(dofName);
   const bool skewSymmetric = realm_.get_skew_symmetric(dofName);
 

@@ -33,6 +33,7 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsNoPstabUpwAd
   : Kernel(),
     hoUpwind_(solnOpts.get_upw_factor(vof->name())),
     useLimiter_(solnOpts.primitive_uses_limiter(vof->name())),
+    useMuscl_(solnOpts.get_muscl_usage(vof->name())),
     limiterType_(solnOpts.limiter_type(vof->name())),
     kappaMuscl_(solnOpts.get_kappa_muscl_factor(vof->name())),
     lrscv_(sierra::nalu::MasterElementRepo::get_surface_master_element(AlgTraits::topo_)->adjacentNodes())
@@ -83,6 +84,14 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsNoPstabUpwAd
       NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsNoPstabUpwAdvElemKernel: "
         << "Unknown limiter type: " << limiterType_ << std::endl;
       throw std::runtime_error("Unknown limiter type");
+    }
+
+    if (useMuscl_) {
+      NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsNoPstabUpwAdvElemKernel: "
+        << "Using MUSCL with kappa: " << kappaMuscl_ << std::endl;
+    } else {
+      NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsNoPstabUpwAdvElemKernel: "
+        << "Not using MUSCL" << std::endl;
     }
   }
 }

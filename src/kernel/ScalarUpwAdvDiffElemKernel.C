@@ -46,6 +46,7 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::ScalarUpwAdvDiffElemKernel(
     alphaUpw_(solnOpts.get_alpha_upw_factor(dofName_)),
     hoUpwind_(solnOpts.get_upw_factor(dofName_)),
     useLimiter_(solnOpts.primitive_uses_limiter(dofName_)),
+    useMuscl_(solnOpts.get_muscl_usage(dofName_)),
     limiterType_(solnOpts.limiter_type(dofName_)),
     om_alpha_(1.0 - alpha_),
     om_alphaUpw_(1.0 - alphaUpw_),
@@ -123,6 +124,7 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::setup(const TimeIntegrator&)
   alphaUpw_ = solnOpts_.get_alpha_upw_factor(dofName_);
   hoUpwind_ = solnOpts_.get_upw_factor(dofName_);
   useLimiter_ = solnOpts_.primitive_uses_limiter(dofName_);
+  useMuscl_ = solnOpts_.get_muscl_usage(dofName_);
 
   // one minus flavor..
   om_alpha_ = 1.0-alpha_;

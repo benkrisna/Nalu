@@ -60,6 +60,7 @@ private:
   const double hoUpwind_;
   bool useLimiter_;
   std::string limiterType_;
+  bool useMuscl_;
   double kappaMuscl_;
   DoubleType (*limiterFunc)(const DoubleType&, const DoubleType &, const DoubleType&);
   

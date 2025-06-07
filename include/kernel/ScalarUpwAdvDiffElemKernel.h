@@ -79,6 +79,7 @@ private:
   double alphaUpw_;
   double hoUpwind_;
   bool useLimiter_;
+  bool useMuscl_;
   std::string limiterType_;
   DoubleType (*limiterFunc_)(const DoubleType&, const DoubleType &, const DoubleType&);
   double om_alpha_;

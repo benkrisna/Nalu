@@ -107,6 +107,7 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const bool useMuscl = realm_.get_muscl_usage(dofName);
   const std::string limiterType = realm_.limiter_type(dofName);
   const double kappaMuscl = realm_.get_kappa_muscl_factor(dofName);
   double (*limiterFunc)(const double&, const double&, const double&);
@@ -131,6 +132,10 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
       NaluEnv::self().naluOutputP0() << "AssembleMomentumEdgeSolverAlgorithm: using kappaMuscl: "
                                      << kappaMuscl << std::endl;
     }
+  } // useLimiter
+
+  if (useMuscl) {
+    NaluEnv::self().naluOutputP0() << "AssembleMomentumEdgeSolverAlgorithm: using MUSCL." << std::endl;
   }
 
   // one minus flavor

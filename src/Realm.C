@@ -5047,6 +5047,22 @@ std::string Realm::get_quad_type() const
 }
 
 //--------------------------------------------------------------------------
+//-------- get_muscl_usage ------------------------------------------
+//--------------------------------------------------------------------------
+bool
+Realm::get_muscl_usage(
+  const std::string dofName )
+{
+  bool usesIt = false;
+  std::map<std::string, bool>::const_iterator iter
+    = solutionOptions_->useMusclMap_.find(dofName);
+  if (iter != solutionOptions_->useMusclMap_.end()) {
+    usesIt = (*iter).second;
+  }
+  return usesIt;
+}
+
+//--------------------------------------------------------------------------
 //-------- get_kappa_muscl_factor() --------------------------------
 //--------------------------------------------------------------------------
 double

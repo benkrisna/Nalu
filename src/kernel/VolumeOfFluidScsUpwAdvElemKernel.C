@@ -33,6 +33,7 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsUpwAdvElemKernel(
   : Kernel(),
     hoUpwind_(solnOpts.get_upw_factor(vof->name())),
     useLimiter_(solnOpts.primitive_uses_limiter(vof->name())),
+    useMuscl_(solnOpts.get_muscl_usage(vof->name())),
     limiterType_(solnOpts.limiter_type(vof->name())),
     kappaMuscl_(solnOpts.get_kappa_muscl_factor(vof->name())),
     lrscv_(sierra::nalu::MasterElementRepo::get_surface_master_element(AlgTraits::topo_)->adjacentNodes())
@@ -81,6 +82,10 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsUpwAdvElemKernel(
         << "Unknown limiter type: " << limiterType_ << std::endl;
       throw std::runtime_error("Unknown limiter type");
     }
+  } // useLimiter_
+
+  if (useMuscl_) {
+    NaluEnv::self().naluOutputP0() << "VolumeOfFluidScsUpwAdvElemKernel: using MUSCL." << std::endl;
   }
 }
 

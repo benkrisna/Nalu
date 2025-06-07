@@ -72,6 +72,7 @@ public:
   bool primitive_uses_limiter(const std::string&) const;
   std::string limiter_type(const std::string&) const;
 
+  bool get_muscl_usage(const std::string &dofName) const;
   double get_kappa_muscl_factor(const std::string&) const;
 
   bool get_shifted_grad_op(const std::string&) const;
@@ -97,6 +98,7 @@ public:
   double lamScDefault_;
   double turbScDefault_;
   double turbPrDefault_;
+  bool musclDefault_;
   bool nocDefault_;
   bool shiftedGradOpDefault_;
   bool skewSymmetricDefault_;
@@ -167,6 +169,7 @@ public:
   std::map<std::string, double> alphaUpwMap_;
   std::map<std::string, double> upwMap_;
   std::map<std::string, bool> limiterMap_;
+  std::map<std::string, bool> useMusclMap_;
   std::map<std::string, double> kappaMusclMap_;
   std::map<std::string, std::string> limiterTypeMap_;
   std::map<std::string, std::string> tanhFormMap_;

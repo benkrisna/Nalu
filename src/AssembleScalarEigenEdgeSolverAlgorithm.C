@@ -415,20 +415,37 @@ AssembleScalarEigenEdgeSolverAlgorithm::execute()
         nonOrth += -lamEffectiveViscIp*kxj*GjIp;
       }
 
-      // add limiter if appropriate
+      
+      // default limiter values
       double limitL = 1.0;
       double limitR = 1.0;
-      const double dq = qNp1R - qNp1L;
-      if ( useLimiter ) {
-        const double dqMl = 2.0*2.0*dqL - dq;
-        const double dqMr = 2.0*2.0*dqR - dq;
-        limitL = limiterFunc(dqMl, dq, small);
-        limitR = limiterFunc(dqMr, dq, small);
-      }
-      
+
       // extrapolated; for now limit
-      const double qIpL = qNp1L + dqL*hoUpwind*limitL;
-      const double qIpR = qNp1R - dqR*hoUpwind*limitR;
+      double qIpL;
+      double qIpR;
+      if (kappaMuscl == -1.0) { // default Nalu operation; i'm keeping this so that we can compare
+        // add limiter if appropriate
+        const double dq = qNp1R - qNp1L;
+        if ( useLimiter ) {
+          if (limitertype != "default") {
+            NaluEnv::self().naluOutputP0() << "AssembleScalarEigenEdgeSolverAlgorithm: using weird limiter."
+                                           << limiterType << std::endl;
+            throw std::runtime_error("AssembleScalarEigenEdgeSolverAlgorithm: using weird limiter.");
+          }
+          const double dqMl = 2.0*2.0*dqL - dq;
+          const double dqMr = 2.0*2.0*dqR - dq;
+          limitL = limiterFunc(dqMl, dq, small);
+          limitR = limiterFunc(dqMr, dq, small);
+        } 
+        qIpL = qNp1L + dqL*hoUpwind*limitL; // standard second order upwind
+        qIpR = qNp1R - dqR*hoUpwind*limitR;
+      } else { // kappaMuscl > -1.0; depends on kappa
+        // TODO: kappaMuscl tends not to be of importance anyways..
+        if (useLimiter) {
+        }
+        qIpL = qNp1L + 0.25 * ((1. - kappaMuscl) * limitL * dqL + (1. + kappaMuscl) * limitL * dq);
+        qIpR = qNp1R - 0.25 * ((1. + kappaMuscl) * limitR * dq + (1. - kappaMuscl) * limitR * dqR);
+      }
 
       //====================================
       // diffusive flux; lam lhs/rhs 

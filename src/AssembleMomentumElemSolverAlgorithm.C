@@ -123,6 +123,7 @@ AssembleMomentumElemSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const bool useMuscl = realm_.get_muscl_usage(dofName);
   double (*limiterFunc)(const double&, const double &, const double&) = nullptr;
   const std::string limiterType = realm_.limiter_type(dofName);
   if (useLimiter) {
@@ -140,7 +141,12 @@ AssembleMomentumElemSolverAlgorithm::execute()
     } else {
       throw std::runtime_error("AssembleMomentumElemSolverAlgorithm: Unknown limiter type: " + limiterType);
     }
-  }
+  } // useLimiter
+
+  if (useMuscl) {
+    printf("AssembleMomentumElemSolverAlgorithm: using MUSCL.\n");
+  } // useMuscl
+
   const bool useShiftedGradOp = realm_.get_shifted_grad_op(dofName);
   const bool skewSymmetric = realm_.get_skew_symmetric(dofName);
 
