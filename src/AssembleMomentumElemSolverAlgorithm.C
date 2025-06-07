@@ -419,7 +419,7 @@ AssembleMomentumElemSolverAlgorithm::execute()
             muscl_execute<double>(
                 p_velocityNp1[ilNdim+idim], p_velocityNp1[irNdim+idim],
                 p_duL[idim], p_duR[idim],
-                p_uIpL[i], p_uIpR[i],
+                p_uIpL[idim], p_uIpR[idim],
                 limiterType);
           }
         } else { // no MUSCL, default Nalu
