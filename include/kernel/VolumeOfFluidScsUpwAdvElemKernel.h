@@ -58,6 +58,7 @@ private:
   VectorFieldType *coordinates_{nullptr};
   
   const double hoUpwind_;
+  double kappaMuscl_;
   bool useLimiter_;
   std::string limiterType_;
   DoubleType (*limiterFunc_)(const DoubleType&, const DoubleType &, const DoubleType&);

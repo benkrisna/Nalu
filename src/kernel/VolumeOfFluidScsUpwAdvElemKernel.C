@@ -34,6 +34,7 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::VolumeOfFluidScsUpwAdvElemKernel(
     hoUpwind_(solnOpts.get_upw_factor(vof->name())),
     useLimiter_(solnOpts.primitive_uses_limiter(vof->name())),
     limiterType_(solnOpts.limiter_type(vof->name())),
+    kappaMuscl_(solnOpts.get_kappa_muscl(vof->name())),
     lrscv_(sierra::nalu::MasterElementRepo::get_surface_master_element(AlgTraits::topo_)->adjacentNodes())
 {
   // save off fields

@@ -105,6 +105,7 @@ AssembleScalarEdgeSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const double kappaMuscl = realm_.get_kappa_muscl_factor(dofName);
   const std::string typeLimiter = realm_.limiter_type(dofName);
   double (*limiterFunc)(const double&, const double &, const double&) = nullptr;
   if (useLimiter) {
@@ -122,6 +123,11 @@ AssembleScalarEdgeSolverAlgorithm::execute()
     } else {
       throw std::runtime_error("AssembleScalarEdgeSolverAlgorithm: Unknown limiter type: " + typeLimiter);
     }
+  }
+
+  if kappaMuscl > 0.0 ) {
+    NaluEnv::self().naluOutputP0() << "AssembleScalarEdgeSolverAlgorithm: using kappaMuscl: "
+                                   << kappaMuscl << std::endl;
   }
 
   // one minus flavor

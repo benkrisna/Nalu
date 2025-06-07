@@ -166,6 +166,11 @@ AssembleScalarEigenEdgeSolverAlgorithm::execute()
     }
   }
 
+  if ( kappaMuscl > 0.0 ) {
+    NaluEnv::self().naluOutputP0() << "AssembleScalarEigenEdgeSolverAlgorithm: using kappaMuscl: "
+                                   << kappaMuscl << std::endl;
+  }
+
   // one minus flavor
   const double om_alpha = 1.0-alpha;
   const double om_alphaUpw = 1.0-alphaUpw;

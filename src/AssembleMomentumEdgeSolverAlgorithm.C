@@ -108,6 +108,7 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
   const std::string limiterType = realm_.limiter_type(dofName);
+  const double kappaMuscl = realm_.get_kappa_muscl_factor(dofName);
   double (*limiterFunc)(const double&, const double&, const double&);
   
   if (useLimiter) {
@@ -124,6 +125,11 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
       limiterFunc = default_limiter<double>;
     } else {
       throw std::runtime_error("AssembleMomentumEdgeSolverAlgorithm: Unknown limiter type: " + limiterType);
+    }
+
+    if (kappaMuscl > 0.0) {
+      NaluEnv::self().naluOutputP0() << "AssembleMomentumEdgeSolverAlgorithm: using kappaMuscl: "
+                                     << kappaMuscl << std::endl;
     }
   }
 

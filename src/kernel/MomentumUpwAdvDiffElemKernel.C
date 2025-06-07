@@ -45,6 +45,8 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::MomentumUpwAdvDiffElemKernel(
     alphaUpw_(solnOpts.get_alpha_upw_factor(dofName_)),
     hoUpwind_(solnOpts.get_upw_factor(dofName_)),
     useLimiter_(solnOpts.primitive_uses_limiter(dofName_)),
+    kappaMuscl_(solnOpts.get_kappa_muscl(dofName_)),
+
     limiterType_(solnOpts.limiter_type(dofName_)),
     om_alpha_(1.0 - alpha_),
     om_alphaUpw_(1.0 - alphaUpw_),
@@ -103,6 +105,11 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::MomentumUpwAdvDiffElemKernel(
       throw std::runtime_error("Unknown limiter type");
     }
   }
+
+  if ( kappaMuscl_ > 0.0 ) {
+    NaluEnv::self().naluOutputP0() << "MomentumUpwAdvDiffElemKernel: using kappaMuscl: "
+                                   << kappaMuscl_ << std::endl;
+  }
 }
 
 template<class AlgTraits>
@@ -119,6 +126,7 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::setup(const TimeIntegrator&)
   alphaUpw_ = solnOpts_.get_alpha_upw_factor(dofName_);
   hoUpwind_ = solnOpts_.get_upw_factor(dofName_);
   useLimiter_ = solnOpts_.primitive_uses_limiter(dofName_);
+  kappaMuscl_ = solnOpts_.get_kappa_muscl(dofName_);
 
   // one minus flavor..
   om_alpha_ = 1.0-alpha_;
