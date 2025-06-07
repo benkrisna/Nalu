@@ -17,6 +17,7 @@
 #include <Realm.h>
 #include <SupplementalAlgorithm.h>
 #include <master_element/MasterElement.h>
+#include "MUSCL.h"
 #include "Limiters.h"
 
 // stk_mesh/base/fem
@@ -358,6 +359,8 @@ AssembleScalarElemSolverAlgorithm::execute()
         const double pecfac = pecletFunction_->execute(std::abs(udotx)/(diffIp+small));
         const double om_pecfac = 1.0-pecfac;
 
+        const double dq = p_scalarQNp1[ir] - p_scalarQNp1[il];
+
         // left and right extrapolation
         double dqL = 0.0;
         double dqR = 0.0;
@@ -368,23 +371,28 @@ AssembleScalarElemSolverAlgorithm::execute()
           dqR += dxjR*p_dqdx[nDim*ir+j];
         }
 
-        // add limiter if appropriate
-        double limitL = 1.0;
-        double limitR = 1.0;
-        if ( useLimiter ) {
-          const double dq = p_scalarQNp1[ir] - p_scalarQNp1[il];
-          const double dqMl = 2.0*2.0*dqL - dq;
-          const double dqMr = 2.0*2.0*dqR - dq;
-          limitL = limiterFunc(dqMl, dq, small);
-          limitR = limiterFunc(dqMr, dq, small);
+        double qIpL, qIpR; // extrapolated values at integration points
+        // Obtain above values:
+        if (useMuscl) {
+          muscl_execute<double>(
+            p_scalarQNp1[il], p_scalarQNp1[ir],
+            dqL, dqR, qIpL, qIpR, limiterType);
+        } else { // no MUSCL, default Nalu
+          // add limiter if appropriate
+          double limitL = 1.0;
+          double limitR = 1.0;
+          if ( useLimiter ) {
+            const double dqMl = 2.0*2.0*dqL - dq;
+            const double dqMr = 2.0*2.0*dqR - dq;
+            limitL = limiterFunc(dqMl, dq, small);
+            limitR = limiterFunc(dqMr, dq, small);
+          }
+          // extrapolated; for now limit (along edge is fine)
+          qIpL = p_scalarQNp1[il] + dqL*hoUpwind*limitL;
+          qIpR = p_scalarQNp1[ir] - dqR*hoUpwind*limitR;
         }
-        
-        // extrapolated; for now limit (along edge is fine)
-        const double qIpL = p_scalarQNp1[il] + dqL*hoUpwind*limitL;
-        const double qIpR = p_scalarQNp1[ir] - dqR*hoUpwind*limitR;
 
         // assemble advection; rhs and upwind contributions
-
         // 2nd order central; simply qIp from above
 
         // upwind

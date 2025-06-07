@@ -205,21 +205,26 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::execute(
       dqR += dxjR*v_Gjq(ir,j);
     }
 
-    // add limiter if appropriate
-    DoubleType limitL = 1.0;
-    DoubleType limitR = 1.0;
-    if ( useLimiter_ ) {
-      const DoubleType dq = v_scalarQ(ir) - v_scalarQ(il);
-      const DoubleType dqMl = 2.0*2.0*dqL - dq;
-      const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
-      limitR = limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
+    DoubleType qIpL, qIpR;
+    if (useMuscl_) {
+      muscl_execute<DoubleType>(
+          v_scalarQ(il), v_scalarQ(ir),
+          dqL, dqR, qIpL, qIpR, limiterType_);
+    } else {  // no MUSCL, default Nalu
+      // add limiter if appropriate
+      DoubleType limitL = 1.0;
+      DoubleType limitR = 1.0;
+      if ( useLimiter_ ) {
+        const DoubleType dq = v_scalarQ(ir) - v_scalarQ(il);
+        const DoubleType dqMl = 2.0*2.0*dqL - dq;
+        const DoubleType dqMr = 2.0*2.0*dqR - dq;
+        limitL = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
+        limitR = limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
+      }
+      // extrapolated; for now limit (along edge is fine)
+      qIpL = v_scalarQ(il) + dqL*hoUpwind_*limitL;
+      qIpR = v_scalarQ(ir) - dqR*hoUpwind_*limitR;
     }
-
-    // extrapolated; for now limit (along edge is fine)
-    const DoubleType qIpL = v_scalarQ(il) + dqL*hoUpwind_*limitL;
-    const DoubleType qIpR = v_scalarQ(ir) - dqR*hoUpwind_*limitR;
-
     // upwind
     const DoubleType qUpwind = stk::math::if_then_else(tmdot > 0,
                                                        alphaUpw_*qIpL + om_alphaUpw_*qIp,
