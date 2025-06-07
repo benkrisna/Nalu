@@ -4330,9 +4330,6 @@ Realm::limiter_type(
       "Realm::limiter_type() for dofName: " + dofName +
       " is not a valid limiter type: " + limiterType);
   }
-  // print limiter type
-  NaluEnv::self().naluOutputP0() << "Realm::limiter_type() for dofName: "
-    << dofName << " is: " << limiterType << std::endl;
   return limiterType;
 }
 
