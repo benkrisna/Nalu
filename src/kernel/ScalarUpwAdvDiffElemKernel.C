@@ -15,6 +15,7 @@
 // template and scratch space
 #include "BuildTemplates.h"
 #include "ScratchViews.h"
+#include "MUSCL.h"
 #include "Limiters.h"
 
 // stk_mesh/base/fem
