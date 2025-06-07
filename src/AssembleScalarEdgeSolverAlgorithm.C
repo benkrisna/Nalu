@@ -125,7 +125,7 @@ AssembleScalarEdgeSolverAlgorithm::execute()
     }
   }
 
-  if kappaMuscl > 0.0 ) {
+  if (kappaMuscl > 0.0 ) {
     NaluEnv::self().naluOutputP0() << "AssembleScalarEdgeSolverAlgorithm: using kappaMuscl: "
                                    << kappaMuscl << std::endl;
   }
