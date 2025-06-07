@@ -26,8 +26,9 @@ namespace nalu{
   template<typename T>
   T van_leer_limiter(const T& dq, const T& dm, const T& small) {
     // van Leer limiter TODO: this is wrong
-    T limit = (2.0*(dm*dq+stk::math::abs(dm*dq))) /
-      ((dm+dq)*(dm+dq)+small);
+    const T r = dq / (dm + small);
+    T limit = (r + stk::math::abs(r)) / 
+    (1.0 + stk::math::abs(r));
     return limit;
   }
 

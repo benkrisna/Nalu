@@ -9,13 +9,16 @@
 #ifndef MUSCL_h
 #define MUSCL_h
 
+#include <string>
+
 namespace sierra{
 namespace nalu{
 
 template<typename T>
-T muscl_execute(const T& qL, const T& qR,
+void muscl_execute(const T& qL, const T& qR,
                 const T& dqL, const T& dqR,
-                T& qIpL, T& qIpR);
+                T& qIpL, T& qIpR,
+                const std::string& limiterType = "van_leer");
 
 } // namespace nalu
 } // namespace Sierra
