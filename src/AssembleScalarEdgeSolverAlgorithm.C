@@ -13,6 +13,7 @@
 #include <LinearSystem.h>
 #include <PecletFunction.h>
 #include <Realm.h>
+#include "MUSCL.h"
 #include "Limiters.h"
 
 // stk_mesh/base/fem
@@ -262,21 +263,28 @@ AssembleScalarEdgeSolverAlgorithm::execute()
         nonOrth += -viscIp*kxj*GjIp;
       }
 
-      // add limiter if appropriate
-      double limitL = 1.0;
-      double limitR = 1.0;
-      const double dq = qNp1R - qNp1L;
-      if ( useLimiter ) {
-        const double dqMl = 2.0*2.0*dqL - dq;
-        const double dqMr = 2.0*2.0*dqR - dq;
-        limitL = limiterFunc(dqMl, dq, small);
-        limitR = limiterFunc(dqMr, dq, small);
-      }
-      
-      // extrapolated; for now limit
-      const double qIpL = qNp1L + dqL*hoUpwind*limitL;
-      const double qIpR = qNp1R - dqR*hoUpwind*limitR;
+      double qIpL, qIpR; // extrapolated values at integration points
+      // Obtain above values:
+      if (useMuscl) {
+        muscl_execute<double>(
+          qNp1L, qNp1R,
+          dqL, dqR, qIpL, qIpR, typeLimiter);
+      } else {  // no MUSCL, default Nalu
+        // add limiter if appropriate
+        double limitL = 1.0;
+        double limitR = 1.0;
+        const double dq = qNp1R - qNp1L;
+        if ( useLimiter ) {
+          const double dqMl = 2.0*2.0*dqL - dq;
+          const double dqMr = 2.0*2.0*dqR - dq;
+          limitL = limiterFunc(dqMl, dq, small);
+          limitR = limiterFunc(dqMr, dq, small);
+        }
 
+        // extrapolated; for now limit
+        qIpL = qNp1L + dqL*hoUpwind*limitL;
+        qIpR = qNp1R - dqR*hoUpwind*limitR;
+      }
       //====================================
       // diffusive flux
       //====================================

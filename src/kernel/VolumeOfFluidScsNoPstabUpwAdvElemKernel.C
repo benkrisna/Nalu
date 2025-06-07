@@ -9,6 +9,7 @@
 #include "AlgTraits.h"
 #include "master_element/MasterElement.h"
 #include "SolutionOptions.h"
+#include "MUSCL.h"
 #include "Limiters.h"
 
 // template and scratch space
@@ -155,21 +156,28 @@ VolumeOfFluidScsNoPstabUpwAdvElemKernel<AlgTraits>::execute(
       dqR += dxjR*v_dvofdx(ir,j);
     }
 
-    // add limiter if appropriate
-    DoubleType limitL = 1.0;
-    DoubleType limitR = 1.0;
-    if ( useLimiter_ ) {
-      const DoubleType dq = v_vofNp1(ir) - v_vofNp1(il);
-      const DoubleType dqMl = 2.0*2.0*dqL - dq;
-      const DoubleType dqMr = 2.0*2.0*dqR - dq;
-      limitL = limiterFunc(dqMl, dq, small_);
-      limitR = limiterFunc(dqMr, dq, small_);
+    DoubleType vofIpL, vofIpR; // extrapolated values at integration points
+    // Obtain above values:
+    if (useMuscl_) {
+      muscl_execute<DoubleType>(v_vofNp1(il), v_vofNp1(ir),
+                                dqL, dqR, vofIpL, vofIpR, limiterType_);
+    } else { // no MUSCL, default Nalu
+             // add limiter if appropriate
+      DoubleType limitL = 1.0;
+      DoubleType limitR = 1.0;
+      if ( useLimiter_ ) {
+        const DoubleType dq = v_vofNp1(ir) - v_vofNp1(il);
+        const DoubleType dqMl = 2.0*2.0*dqL - dq;
+        const DoubleType dqMr = 2.0*2.0*dqR - dq;
+        limitL = limiterFunc(dqMl, dq, small_);
+        limitR = limiterFunc(dqMr, dq, small_);
+      }
+
+      // extrapolated; for now limit (along edge is fine)
+      vofIpL = v_vofNp1(il) + dqL*hoUpwind_*limitL;
+      vofIpR = v_vofNp1(ir) - dqR*hoUpwind_*limitR;
+
     }
-
-    // extrapolated; for now limit (along edge is fine)
-    const DoubleType vofIpL = v_vofNp1(il) + dqL*hoUpwind_*limitL;
-    const DoubleType vofIpR = v_vofNp1(ir) - dqR*hoUpwind_*limitR;
-
     // upwind
     const DoubleType vofUpwind = stk::math::if_then_else(vdot > 0,
                                                          vofIpL,

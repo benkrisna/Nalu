@@ -13,6 +13,7 @@
 #include <LinearSystem.h>
 #include <PecletFunction.h>
 #include <Realm.h>
+#include "MUSCL.h"
 #include "Limiters.h"
 
 #include <stk_mesh/base/BulkData.hpp>
@@ -287,21 +288,30 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
       const double pecfac = pecletFunction_->execute(std::abs(udotx)/(diffIp+small));
       const double om_pecfac = 1.0-pecfac;
 
-      // determine limiter if applicable
-      if ( useLimiter ) {
-        for ( int i = 0; i < nDim; ++i ) {
-          const double dq = uNp1R[i] - uNp1L[i];
-          const double dqMl = 2.0*2.0*p_duL[i] - dq;
-          const double dqMr = 2.0*2.0*p_duR[i] - dq;
-          p_limitL[i] = limiterFunc(dqMl, dq, small);
-          p_limitR[i] = limiterFunc(dqMr, dq, small);
+      if (useMuscl) {
+        for (int idim=0;idim<nDim;++idim) {
+          muscl_execute<double>(
+            uNp1L[idim], uNp1R[idim],
+            p_duL[idim], p_duR[idim],
+            p_uIpL[idim], p_uIpR[idim],
+            limiterType);
         }
-      }
+      } else {  // no MUSCL, default Nalu
+        if ( useLimiter ) {
+          for ( int i = 0; i < nDim; ++i ) {
+            const double dq = uNp1R[i] - uNp1L[i];
+            const double dqMl = 2.0*2.0*p_duL[i] - dq;
+            const double dqMr = 2.0*2.0*p_duR[i] - dq;
+            p_limitL[i] = limiterFunc(dqMl, dq, small);
+            p_limitR[i] = limiterFunc(dqMr, dq, small);
+          }
+        }
 
-      // final upwind extrapolation; with limiter
-      for ( int i = 0; i < nDim; ++i ) {
-        p_uIpL[i] = uNp1L[i] + p_duL[i]*hoUpwind*p_limitL[i];
-        p_uIpR[i] = uNp1R[i] - p_duR[i]*hoUpwind*p_limitR[i];
+        // final upwind extrapolation; with limiter
+        for ( int i = 0; i < nDim; ++i ) {
+          p_uIpL[i] = uNp1L[i] + p_duL[i]*hoUpwind*p_limitL[i];
+          p_uIpR[i] = uNp1R[i] - p_duR[i]*hoUpwind*p_limitR[i];
+        }
       }
 
       /*

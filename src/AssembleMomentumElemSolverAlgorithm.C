@@ -17,6 +17,7 @@
 #include <Realm.h>
 #include <SupplementalAlgorithm.h>
 #include <master_element/MasterElement.h>
+#include "MUSCL.h"
 #include "Limiters.h"
 
 // stk_mesh/base/fem
@@ -413,21 +414,30 @@ AssembleMomentumElemSolverAlgorithm::execute()
         const double pecfac = pecletFunction_->execute(std::abs(udotx)/(diffIp+small));
         const double om_pecfac = 1.0-pecfac;
 	
-        // determine limiter if applicable
-        if ( useLimiter ) {
-          for ( int i = 0; i < nDim; ++i ) {
-            const double dq = p_velocityNp1[irNdim+i] - p_velocityNp1[ilNdim+i];
-            const double dqMl = 2.0*2.0*p_duL[i] - dq;
-            const double dqMr = 2.0*2.0*p_duR[i] - dq;
-            p_limitL[i] = limiterFunc(dqMl, dq, small);
-            p_limitR[i] = limiterFunc(dqMr, dq, small);
+        if (useMuscl) {
+          for (int idim = 0; idim < nDim; ++idim) {
+            muscl_execute<double>(
+                p_velocityNp1[ilNdim+idim], p_velocityNp1[irNdim+idim],
+                p_duL[idim], p_duR[idim],
+                p_uIpL[i], p_uIpR[i],
+                limiterType);
           }
-        }
-	
-        // final upwind extrapolation; with limiter
-        for ( int i = 0; i < nDim; ++i ) {
-          p_uIpL[i] = p_velocityNp1[ilNdim+i] + p_duL[i]*hoUpwind*p_limitL[i];
-          p_uIpR[i] = p_velocityNp1[irNdim+i] - p_duR[i]*hoUpwind*p_limitR[i];
+        } else { // no MUSCL, default Nalu
+          if ( useLimiter ) {
+            for ( int i = 0; i < nDim; ++i ) {
+              const double dq = p_velocityNp1[irNdim+i] - p_velocityNp1[ilNdim+i];
+              const double dqMl = 2.0*2.0*p_duL[i] - dq;
+              const double dqMr = 2.0*2.0*p_duR[i] - dq;
+              p_limitL[i] = limiterFunc(dqMl, dq, small);
+              p_limitR[i] = limiterFunc(dqMr, dq, small);
+            }
+          }
+
+          // final upwind extrapolation; with limiter
+          for ( int i = 0; i < nDim; ++i ) {
+            p_uIpL[i] = p_velocityNp1[ilNdim+i] + p_duL[i]*hoUpwind*p_limitL[i];
+            p_uIpR[i] = p_velocityNp1[irNdim+i] - p_duR[i]*hoUpwind*p_limitR[i];
+          }
         }
 
         // assemble advection; rhs and upwind contributions; add in divU stress (explicit)

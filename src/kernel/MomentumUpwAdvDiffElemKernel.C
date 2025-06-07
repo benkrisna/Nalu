@@ -11,6 +11,7 @@
 #include "SolutionOptions.h"
 #include "EquationSystem.h"
 #include "PecletFunction.h"
+#include "MUSCL.h"
 #include "Limiters.h"
 
 // template and scratch space
@@ -225,21 +226,32 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::execute(
     const DoubleType pecfac = pecletFunction_->execute(pecFuncArg);
     const DoubleType om_pecfac = 1.0-pecfac;
     
-    // determine limiter if applicable
-    if ( useLimiter_ ) {
-      for ( int i = 0; i < AlgTraits::nDim_; ++i ) {
-        const DoubleType dq = v_uNp1(ir,i) - v_uNp1(il,i);
-        const DoubleType dqMl = 2.0*2.0*w_duL[i] - dq;
-        const DoubleType dqMr = 2.0*2.0*w_duR[i] - dq;
-        w_limitL[i] = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
-        w_limitR[i] = limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
+    if (useMuscl_) {
+      for (int idim=0; idim < AlgTraits::nDim_; ++idim) {
+        muscl_execute<DoubleType>(
+            v_uNp1(il,idim), v_uNp1(ir,idim),
+            w_duL[idim], w_duR[idim],
+            w_uIpL[idim], w_uIpR[idim],
+            limiterType_
+        )
       }
-    }
-    
-    // final upwind extrapolation; with limiter
-    for ( int i = 0; i < AlgTraits::nDim_; ++i ) {
-      w_uIpL[i] = v_uNp1(il,i) + w_duL[i]*hoUpwind_*w_limitL[i];
-      w_uIpR[i] = v_uNp1(ir,i) - w_duR[i]*hoUpwind_*w_limitR[i];
+    } else { // no MUSCL, Default Nalu
+      // determine limiter if applicable
+      if ( useLimiter_ ) {
+        for ( int i = 0; i < AlgTraits::nDim_; ++i ) {
+          const DoubleType dq = v_uNp1(ir,i) - v_uNp1(il,i);
+          const DoubleType dqMl = 2.0*2.0*w_duL[i] - dq;
+          const DoubleType dqMr = 2.0*2.0*w_duR[i] - dq;
+          w_limitL[i] = limiterFunc_(dqMl, dq, static_cast<DoubleType>(small_));
+          w_limitR[i] = limiterFunc_(dqMr, dq, static_cast<DoubleType>(small_));
+        }
+      }
+
+      // final upwind extrapolation; with limiter
+      for ( int i = 0; i < AlgTraits::nDim_; ++i ) {
+        w_uIpL[i] = v_uNp1(il,i) + w_duL[i]*hoUpwind_*w_limitL[i];
+        w_uIpR[i] = v_uNp1(ir,i) - w_duR[i]*hoUpwind_*w_limitR[i];
+      }
     }
     
     // assemble advection; rhs only; add in divU stress (explicit)
