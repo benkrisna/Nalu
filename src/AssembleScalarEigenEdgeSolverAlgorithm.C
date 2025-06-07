@@ -148,6 +148,7 @@ AssembleScalarEigenEdgeSolverAlgorithm::execute()
   const double alphaUpw = realm_.get_alpha_upw_factor(dofName);
   const double hoUpwind = realm_.get_upw_factor(dofName);
   const bool useLimiter = realm_.primitive_uses_limiter(dofName);
+  const bool useMuscl = realm_.get_muscl_usage(dofName);
   const std::string limiterType = realm_.limiter_type(dofName);
   const double kappaMuscl = realm_.get_kappa_muscl_factor(dofName);
   double (*limiterFunc)(const double&, const double &, const double&) = nullptr;
@@ -164,13 +165,11 @@ AssembleScalarEigenEdgeSolverAlgorithm::execute()
     } else {
       throw std::runtime_error("AssembleScalarEigenEdgeSolverAlgorithm: Unknown limiter type: " + limiterType);
     }
-  }
+  } // useLimiter
 
-  if ( kappaMuscl > 0.0 ) {
-    NaluEnv::self().naluOutputP0() << "AssembleScalarEigenEdgeSolverAlgorithm: using kappaMuscl: "
-                                   << kappaMuscl << std::endl;
+  if (useMuscl) {
+    NaluEnv::self().naluOutputP0() << "AssembleScalarEigenEdgeSolverAlgorithm: using MUSCL." << std::endl;
   }
-
   // one minus flavor
   const double om_alpha = 1.0-alpha;
   const double om_alphaUpw = 1.0-alphaUpw;
@@ -415,37 +414,20 @@ AssembleScalarEigenEdgeSolverAlgorithm::execute()
         nonOrth += -lamEffectiveViscIp*kxj*GjIp;
       }
 
-      
-      // default limiter values
+      // add limiter if appropriate
       double limitL = 1.0;
       double limitR = 1.0;
-
-      // extrapolated; for now limit
-      double qIpL;
-      double qIpR;
-      if (kappaMuscl == -1.0) { // default Nalu operation; i'm keeping this so that we can compare
-        // add limiter if appropriate
-        const double dq = qNp1R - qNp1L;
-        if ( useLimiter ) {
-          if (limitertype != "default") {
-            NaluEnv::self().naluOutputP0() << "AssembleScalarEigenEdgeSolverAlgorithm: using weird limiter."
-                                           << limiterType << std::endl;
-            throw std::runtime_error("AssembleScalarEigenEdgeSolverAlgorithm: using weird limiter.");
-          }
-          const double dqMl = 2.0*2.0*dqL - dq;
-          const double dqMr = 2.0*2.0*dqR - dq;
-          limitL = limiterFunc(dqMl, dq, small);
-          limitR = limiterFunc(dqMr, dq, small);
-        } 
-        qIpL = qNp1L + dqL*hoUpwind*limitL; // standard second order upwind
-        qIpR = qNp1R - dqR*hoUpwind*limitR;
-      } else { // kappaMuscl > -1.0; depends on kappa
-        // TODO: kappaMuscl tends not to be of importance anyways..
-        if (useLimiter) {
-        }
-        qIpL = qNp1L + 0.25 * ((1. - kappaMuscl) * limitL * dqL + (1. + kappaMuscl) * limitL * dq);
-        qIpR = qNp1R - 0.25 * ((1. + kappaMuscl) * limitR * dq + (1. - kappaMuscl) * limitR * dqR);
+      const double dq = qNp1R - qNp1L;
+      if ( useLimiter ) {
+        const double dqMl = 2.0*2.0*dqL - dq;
+        const double dqMr = 2.0*2.0*dqR - dq;
+        limitL = limiterFunc(dqMl, dq, small);
+        limitR = limiterFunc(dqMr, dq, small);
       }
+      
+      // extrapolated; for now limit
+      const double qIpL = qNp1L + dqL*hoUpwind*limitL;
+      const double qIpR = qNp1R - dqR*hoUpwind*limitR;
 
       //====================================
       // diffusive flux; lam lhs/rhs 
