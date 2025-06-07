@@ -123,7 +123,8 @@ AssembleScalarElemSolverAlgorithm::execute()
   const std::string limiterType = realm_.limiter_type(dofName);
   double (*limiterFunc)(const double&, const double&, const double&);
   if (useLimiter) {
-    printf("AssembleScalarElemSolverAlgorithm: using limiter %s\n", limiterType.c_str());
+    NaluEnv::self().naluOutputP0() << "AssembleScalarElemSolverAlgorithm: " << dofName << std::endl;
+    NaluEnv::self().naluOutputP0() << "AssembleScalarElemSolverAlgorithm: using limiter " << limiterType << std::endl;
     if (limiterType == "van_leer") {
       limiterFunc = van_leer_limiter<double>;
     } else if (limiterType== "minmod") {
