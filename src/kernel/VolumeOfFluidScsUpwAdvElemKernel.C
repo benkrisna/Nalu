@@ -147,7 +147,8 @@ VolumeOfFluidScsUpwAdvElemKernel<AlgTraits>::execute(
     if (useMuscl_) {
       muscl_execute<DoubleType>(
         v_vofNp1(il), v_vofNp1(ir),
-        dqL, dqR, vofIpL, vofIpR, limiterType_);
+        dqL, dqR, vofIpL, vofIpR, 
+        useLimiter_, limiterType_);
     } else { // no MUSCL, Default Nalu
       // add limiter if appropriate
       DoubleType limitL = 1.0;

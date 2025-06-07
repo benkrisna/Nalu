@@ -30,6 +30,7 @@ template<typename T>
 void muscl_execute(const T& qL, const T& qR,
     const T& dqL, const T& dqR,
     T& qIpL, T& qIpR, 
+    const bool useLimiter,
     const std::string& limiterType) {
   const T dq = qR - qL;
 
@@ -48,8 +49,10 @@ void muscl_execute(const T& qL, const T& qR,
   }
 
   T limitL = 1.0; T limitR = 1.0;
-  const T small = 1e-10;
-  limitL = limiterFunc(dqL, dq, small); limitR = limiterFunc(dqR, dq, small);
+  if (useLimiter) {
+    const T small = 1e-10;
+    limitL = limiterFunc(dqL, dq, small); limitR = limiterFunc(dqR, dq, small);
+  }
 
   // compute the MUSCL interpolated states
   qIpL = qL + 0.5 * limitL * dqL;
@@ -59,11 +62,11 @@ void muscl_execute(const T& qL, const T& qR,
 
 template void muscl_execute<double>(const double&, const double&,
     const double&, const double&,
-    double&, double&, const std::string&);
+    double&, double&, const bool, const std::string&);
 #ifdef STK_HAVE_SIMD
 template void muscl_execute<DoubleType>(const DoubleType&, const DoubleType&,
     const DoubleType&, const DoubleType&,
-    DoubleType&, DoubleType&, const std::string&);
+    DoubleType&, DoubleType&, const bool, const std::string&);
 #endif
 
 } // namespace nalu

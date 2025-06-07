@@ -18,6 +18,7 @@ template<typename T>
 void muscl_execute(const T& qL, const T& qR,
                 const T& dqL, const T& dqR,
                 T& qIpL, T& qIpR,
+                const bool useLimiter=true,
                 const std::string& limiterType = "van_leer");
 
 } // namespace nalu

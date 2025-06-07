@@ -376,7 +376,7 @@ AssembleScalarElemSolverAlgorithm::execute()
         if (useMuscl) {
           muscl_execute<double>(
             p_scalarQNp1[il], p_scalarQNp1[ir],
-            dqL, dqR, qIpL, qIpR, limiterType);
+            dqL, dqR, qIpL, qIpR, useLimiter, limiterType);
         } else { // no MUSCL, default Nalu
           // add limiter if appropriate
           double limitL = 1.0;

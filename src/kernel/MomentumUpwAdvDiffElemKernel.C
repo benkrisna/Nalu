@@ -232,7 +232,7 @@ MomentumUpwAdvDiffElemKernel<AlgTraits>::execute(
             v_uNp1(il,idim), v_uNp1(ir,idim),
             w_duL[idim], w_duR[idim],
             w_uIpL[idim], w_uIpR[idim],
-            limiterType_);
+            useLimiter_, limiterType_);
       }
     } else { // no MUSCL, Default Nalu
       // determine limiter if applicable

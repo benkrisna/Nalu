@@ -420,7 +420,7 @@ AssembleMomentumElemSolverAlgorithm::execute()
                 p_velocityNp1[ilNdim+idim], p_velocityNp1[irNdim+idim],
                 p_duL[idim], p_duR[idim],
                 p_uIpL[idim], p_uIpR[idim],
-                limiterType);
+                useLimiter, limiterType);
           }
         } else { // no MUSCL, default Nalu
           if ( useLimiter ) {

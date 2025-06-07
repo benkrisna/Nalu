@@ -210,7 +210,7 @@ ScalarUpwAdvDiffElemKernel<AlgTraits>::execute(
     if (useMuscl_) {
       muscl_execute<DoubleType>(
           v_scalarQ(il), v_scalarQ(ir),
-          dqL, dqR, qIpL, qIpR, limiterType_);
+          dqL, dqR, qIpL, qIpR, useLimiter_, limiterType_);
     } else {  // no MUSCL, default Nalu
       // add limiter if appropriate
       DoubleType limitL = 1.0;

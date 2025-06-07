@@ -268,7 +268,8 @@ AssembleScalarEdgeSolverAlgorithm::execute()
       if (useMuscl) {
         muscl_execute<double>(
           qNp1L, qNp1R,
-          dqL, dqR, qIpL, qIpR, typeLimiter);
+          dqL, dqR, qIpL, qIpR, 
+          useLimiter, typeLimiter);
       } else {  // no MUSCL, default Nalu
         // add limiter if appropriate
         double limitL = 1.0;

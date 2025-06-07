@@ -294,7 +294,7 @@ AssembleMomentumEdgeSolverAlgorithm::execute()
             uNp1L[idim], uNp1R[idim],
             p_duL[idim], p_duR[idim],
             p_uIpL[idim], p_uIpR[idim],
-            limiterType);
+            useLimiter, limiterType);
         }
       } else {  // no MUSCL, default Nalu
         if ( useLimiter ) {
